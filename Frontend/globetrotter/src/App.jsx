@@ -11,6 +11,10 @@ import Dashboard from "./pages/Dashboard";
 import CreateNewTrip from "./pages/CreateNewTrip";
 import TripPlanning from "./pages/TripPlanning";
 import ItineraryBuilder from "./pages/ItineraryBuilder";
+import UserProfile from "./pages/UserProfile";
+import AdminAnalytics from "./pages/AdminAnalytics";
+import AdminSignIn from "./pages/AdminSignIn";
+
 
 // Simple authentication check
 const ProtectedRoute = ({ children }) => {
@@ -62,6 +66,27 @@ function App() {
               // <ProtectedRoute>
               <ItineraryBuilder />
               // </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              // <ProtectedRoute>
+              <UserProfile />
+              // </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin-login"
+            element={<AdminSignIn />}
+          />
+
+          <Route
+            path="/admin-analytics"
+            element={
+              <AdminAnalytics />
             }
           />
 

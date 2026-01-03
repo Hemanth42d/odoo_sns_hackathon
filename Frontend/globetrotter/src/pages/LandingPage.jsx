@@ -203,7 +203,8 @@ function LandingPage() {
           </div>
           <div className="border-t border-gray-700 pt-8 text-center">
             <p className="text-gray-400">
-              &copy; 2024 GlobeTrotter. All rights reserved.
+              &copy; 2024 GlobeTrotter. All rights reserved. |{" "}
+              <Link to="/admin-login" className="hover:text-white transition-all text-[10px] font-bold uppercase tracking-widest opacity-30 hover:opacity-100">Admin Portal</Link>
             </p>
           </div>
         </div>
