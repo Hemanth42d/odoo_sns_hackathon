@@ -15,6 +15,8 @@ import UserProfile from "./pages/UserProfile";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminSignIn from "./pages/AdminSignIn";
 import MyTripsPage from "./pages/MyTripsPage";
+import DestinationDetails from "./pages/DestinationDetails";
+
 
 import CalendarPage from "./pages/CalendarPage";
 import ItineraryBudgetPage from "./pages/ItineraryBudgetPage";
@@ -114,8 +116,18 @@ function App() {
           />
 
           <Route
+            path="/destination/:id"
+            element={
+              // <ProtectedRoute>
+              <DestinationDetails />
+              // </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/community"
             element={
+
               // <ProtectedRoute>
               <CommunityPage />
               // </ProtectedRoute>
