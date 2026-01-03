@@ -14,6 +14,8 @@ import ItineraryBuilder from "./pages/ItineraryBuilder";
 import UserProfile from "./pages/UserProfile";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminSignIn from "./pages/AdminSignIn";
+import MyTripsPage from "./pages/MyTripsPage";
+
 import CalendarPage from "./pages/CalendarPage";
 import ItineraryBudgetPage from "./pages/ItineraryBudgetPage";
 import CommunityPage from "./pages/CommunityPage";
@@ -80,6 +82,15 @@ function App() {
             element={
               // <ProtectedRoute>
               <UserProfile />
+              // </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/trips"
+            element={
+              // <ProtectedRoute>
+              <MyTripsPage />
               // </ProtectedRoute>
             }
           />
