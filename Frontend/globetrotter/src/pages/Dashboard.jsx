@@ -26,16 +26,25 @@ function Dashboard() {
 
 
 
-  const filteredDestinations = activeCategory === "All"
-    ? destinations
-    : destinations.filter(dest => dest.category === activeCategory);
+  const filteredDestinations = destinations.filter(dest => {
+    const matchesCategory = activeCategory === "All" || dest.category === activeCategory;
+    const matchesSearch = !searchQuery ||
+      dest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dest.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dest.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/explore?search=${encodeURIComponent(searchQuery.trim())}`);
+    // Search is now handled via live filtering in filteredDestinations
+    const resultsSection = document.getElementById('popular-destinations');
+    if (resultsSection) {
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
 
   const toggleLike = (id, e) => {
     e.stopPropagation();
@@ -164,7 +173,8 @@ function Dashboard() {
         </section>
 
         {/* Airbnb Style Destination Grid */}
-        <section className="mb-20">
+        <section id="popular-destinations" className="mb-20">
+
           <div className="flex items-center justify-between mb-10">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Popular Destinations</h2>
@@ -172,8 +182,23 @@ function Dashboard() {
             </div>
           </div>
 
+          {filteredDestinations.length === 0 && (
+            <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+              <span className="text-6xl mb-4 block">🔍</span>
+              <h3 className="text-xl font-bold text-gray-900">No destinations found</h3>
+              <p className="text-gray-500 mt-2">Try adjusting your search or category filters.</p>
+              <button
+                onClick={() => { setSearchQuery(""); setActiveCategory("All"); }}
+                className="mt-6 text-blue-600 font-bold hover:underline"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
             {filteredDestinations.map((dest) => (
+
               <div
                 key={dest.id}
                 className="group cursor-pointer"
@@ -230,9 +255,6 @@ function Dashboard() {
             <div className="absolute bottom-12 left-12 text-white max-w-lg">
               <h2 className="text-5xl font-black mb-6 drop-shadow-lg">Discover Unique Experiences</h2>
               <p className="text-xl font-medium opacity-90 mb-8 leading-relaxed">Activities, workshops, and more organized by local experts around the world.</p>
-              <button className="bg-white text-gray-900 px-10 py-5 rounded-2xl font-black hover:bg-gray-100 transition-all shadow-xl text-lg">
-                View Collection
-              </button>
             </div>
           </div>
         </section>

@@ -66,8 +66,20 @@ function UserProfile() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditedUser(prev => ({ ...prev, [name]: value }));
+    if (name.includes(".")) {
+      const [parent, child] = name.split(".");
+      setEditedUser(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setEditedUser(prev => ({ ...prev, [name]: value }));
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -118,10 +130,8 @@ function UserProfile() {
               </div>
               <div className="p-2">
                 {[
-                  { name: "My Subscription", icon: "💎", color: "text-purple-600" },
                   { name: "Security & Privacy", icon: "🔒", color: "text-blue-600" },
                   { name: "Notification Preferences", icon: "🔔", color: "text-orange-600" },
-                  { name: "Payment Methods", icon: "💳", color: "text-green-600" },
                   { name: "Help & Support", icon: "🎧", color: "text-gray-600" },
                   { name: "Delete Account", icon: "⚠️", color: "text-red-500" },
                 ].map((item) => (
@@ -252,13 +262,40 @@ function UserProfile() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
                       <p className="text-xs text-blue-600 uppercase tracking-wider font-bold mb-1">Travel Style</p>
-                      <p className="text-blue-900 font-semibold">{user.preferences.travelStyle}</p>
+                      {isEditing ? (
+                        <select
+                          name="preferences.travelStyle"
+                          value={editedUser.preferences.travelStyle}
+                          onChange={handleChange}
+                          className="w-full bg-white px-3 py-2 rounded-lg border border-blue-200 text-blue-900 font-semibold focus:ring-2 focus:ring-blue-500"
+                        >
+                          {["Cultural", "Adventure", "Relaxation", "Luxury", "Budget", "Business"].map(style => (
+                            <option key={style} value={style}>{style}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <p className="text-blue-900 font-semibold">{user.preferences.travelStyle}</p>
+                      )}
                     </div>
                     <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
                       <p className="text-xs text-purple-600 uppercase tracking-wider font-bold mb-1">Budget Preference</p>
-                      <p className="text-purple-900 font-semibold">{user.preferences.budgetType}</p>
+                      {isEditing ? (
+                        <select
+                          name="preferences.budgetType"
+                          value={editedUser.preferences.budgetType}
+                          onChange={handleChange}
+                          className="w-full bg-white px-3 py-2 rounded-lg border border-purple-200 text-purple-900 font-semibold focus:ring-2 focus:ring-purple-500"
+                        >
+                          {["Backpacker", "Mid-range", "Luxury", "Ultra-Luxury"].map(budget => (
+                            <option key={budget} value={budget}>{budget}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <p className="text-purple-900 font-semibold">{user.preferences.budgetType}</p>
+                      )}
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
