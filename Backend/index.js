@@ -1,17 +1,25 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const connectDB = require("./config/database");
+const { defaultLimit } = require("./middleware/rateLimiter");
 
 const authRoutes = require("./routes/auth");
 const tripRoutes = require("./routes/trips");
 const itineraryRoutes = require("./routes/itinerary");
 const activityRoutes = require("./routes/activities");
+const searchRoutes = require("./routes/search");
+const uploadRoutes = require("./routes/upload");
+const analyticsRoutes = require("./routes/analytics");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 connectDB();
+
+// Apply rate limiting
+app.use(defaultLimit);
 
 app.use(
   cors({
@@ -22,6 +30,9 @@ app.use(
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -39,6 +50,9 @@ app.get("/", (req, res) => {
       trips: "/api/trips",
       itinerary: "/api/trips/:tripId/itinerary",
       activities: "/api/trips/:tripId/itinerary/stops/:stopId/activities",
+      search: "/api/search",
+      upload: "/api/upload",
+      analytics: "/api/analytics",
     },
   });
 });
@@ -50,6 +64,9 @@ app.use(
   "/api/trips/:tripId/itinerary/stops/:stopId/activities",
   activityRoutes
 );
+app.use("/api/search", searchRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 app.use((err, req, res, next) => {
   console.error("Error:", err);

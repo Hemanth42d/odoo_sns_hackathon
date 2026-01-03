@@ -458,6 +458,51 @@ const TripSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    likedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    shares: {
+      type: Number,
+      default: 0,
+    },
+    images: [
+      {
+        url: String,
+        filename: String,
+        size: Number,
+        uploadedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        uploadedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    budget: {
+      total: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      spent: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      breakdown: {
+        accommodation: { type: Number, default: 0 },
+        transportation: { type: Number, default: 0 },
+        food: { type: Number, default: 0 },
+        activities: { type: Number, default: 0 },
+        shopping: { type: Number, default: 0 },
+        other: { type: Number, default: 0 },
+      },
+    },
   },
   {
     timestamps: true,
@@ -487,7 +532,6 @@ StopSchema.pre("save", function (next) {
     this.duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
- 
   const accommodationCost =
     this.accommodation && this.accommodation.totalCost
       ? this.accommodation.totalCost
