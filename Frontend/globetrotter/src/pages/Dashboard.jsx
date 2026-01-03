@@ -94,26 +94,11 @@ function Dashboard() {
             Welcome back, {user?.firstName || "Traveler"}! 👋
           </h1>
           <p className="text-lg text-gray-500 mt-1 font-medium">
-            Explore homes and experiences tailored for your journey.
+            Explore places and experiences tailored for your journey.
           </p>
         </section>
 
-        {/* Categories Bar - Airbnb Style */}
-        <section className="sticky top-[80px] z-40 bg-white/95 backdrop-blur-md py-4 border-b border-gray-100 flex items-center space-x-8 overflow-x-auto no-scrollbar mb-10">
-          {categories.map((cat) => (
-            <button
-              key={cat.name}
-              onClick={() => setActiveCategory(cat.name)}
-              className={`flex flex-col items-center min-w-max space-y-2 transition-all group ${activeCategory === cat.name ? "text-gray-900 border-b-2 border-gray-900 pb-2" : "text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-2"
-                }`}
-            >
-              <span className="text-2xl group-hover:scale-110 transition-transform">{cat.icon}</span>
-              <span className={`text-xs font-semibold ${activeCategory === cat.name ? "opacity-100" : "opacity-70 group-hover:opacity-100"}`}>
-                {cat.name}
-              </span>
-            </button>
-          ))}
-        </section>
+
 
         {/* Keep Existing Search Section */}
         <section className="mb-16">
@@ -171,6 +156,24 @@ function Dashboard() {
             </div>
           </div>
         </section>
+
+        {/* Categories Bar - Moved below Search and Centered */}
+        <section className="sticky top-[80px] z-40 bg-white/95 backdrop-blur-md py-6 border-b border-gray-100 flex justify-center items-center space-x-12 overflow-x-auto no-scrollbar mb-12">
+          {categories.map((cat) => (
+            <button
+              key={cat.name}
+              onClick={() => setActiveCategory(cat.name)}
+              className={`flex flex-col items-center min-w-max space-y-3 transition-all group ${activeCategory === cat.name ? "text-gray-900 border-b-2 border-gray-900 pb-3" : "text-gray-500 hover:text-gray-900 border-b-2 border-transparent pb-3"
+                }`}
+            >
+              <span className="text-3xl group-hover:scale-110 transition-transform">{cat.icon}</span>
+              <span className={`text-sm font-bold tracking-tight ${activeCategory === cat.name ? "opacity-100" : "opacity-60 group-hover:opacity-100"}`}>
+                {cat.name}
+              </span>
+            </button>
+          ))}
+        </section>
+
 
         {/* Airbnb Style Destination Grid */}
         <section id="popular-destinations" className="mb-20">
