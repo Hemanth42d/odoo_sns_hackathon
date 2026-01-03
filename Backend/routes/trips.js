@@ -467,4 +467,171 @@ router.delete("/:id", auth, async (req, res) => {
   }
 });
 
+// Like/Unlike a trip
+router.post("/:id/like", auth, async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({
+        success: false,
+        message: "Trip not found",
+      });
+    }
+
+    // Check if trip is public or user has access
+    const isOwner = trip.owner.toString() === req.user._id.toString();
+    const isCollaborator = trip.collaborators.some(
+      (collab) => collab.user.toString() === req.user._id.toString()
+    );
+
+    if (!trip.isPublic && !isOwner && !isCollaborator) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied to this trip",
+      });
+    }
+
+    // Toggle like
+    const likedBy = trip.likedBy || [];
+    const userIndex = likedBy.findIndex(
+      (id) => id.toString() === req.user._id.toString()
+    );
+
+    let isLiked;
+    if (userIndex === -1) {
+      likedBy.push(req.user._id);
+      isLiked = true;
+    } else {
+      likedBy.splice(userIndex, 1);
+      isLiked = false;
+    }
+
+    await Trip.findByIdAndUpdate(req.params.id, {
+      likedBy,
+      likes: likedBy.length,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        isLiked,
+        likesCount: likedBy.length,
+      },
+    });
+  } catch (error) {
+    console.error("Like trip error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while liking trip",
+    });
+  }
+});
+
+// Share trip
+router.post("/:id/share", auth, async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({
+        success: false,
+        message: "Trip not found",
+      });
+    }
+
+    // Check if user has access to the trip
+    const isOwner = trip.owner.toString() === req.user._id.toString();
+    const isCollaborator = trip.collaborators.some(
+      (collab) => collab.user.toString() === req.user._id.toString()
+    );
+
+    if (!trip.isPublic && !isOwner && !isCollaborator) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied to this trip",
+      });
+    }
+
+    // Increment share count
+    await Trip.findByIdAndUpdate(req.params.id, {
+      $inc: { shares: 1 },
+    });
+
+    res.json({
+      success: true,
+      message: "Trip shared successfully",
+      data: {
+        shareUrl: `${process.env.CLIENT_URL}/trip/${req.params.id}`,
+        shares: trip.shares + 1,
+      },
+    });
+  } catch (error) {
+    console.error("Share trip error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while sharing trip",
+    });
+  }
+});
+
+// Get trip statistics
+router.get("/:id/stats", optionalAuth, async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+
+    if (!trip) {
+      return res.status(404).json({
+        success: false,
+        message: "Trip not found",
+      });
+    }
+
+    // Check permissions
+    const isOwner =
+      req.user && trip.owner.toString() === req.user._id.toString();
+    const isCollaborator =
+      req.user &&
+      trip.collaborators.some(
+        (collab) => collab.user.toString() === req.user._id.toString()
+      );
+
+    if (!trip.isPublic && !isOwner && !isCollaborator) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied to this trip",
+      });
+    }
+
+    const stats = {
+      views: trip.views || 0,
+      likes: trip.likes || 0,
+      shares: trip.shares || 0,
+      collaborators: trip.collaborators.length,
+      stops: trip.itinerary?.stops?.length || 0,
+      activities:
+        trip.itinerary?.stops?.reduce(
+          (total, stop) => total + (stop.activities?.length || 0),
+          0
+        ) || 0,
+      budget: {
+        total: trip.budget?.total || 0,
+        spent: trip.budget?.spent || 0,
+        remaining: (trip.budget?.total || 0) - (trip.budget?.spent || 0),
+      },
+    };
+
+    res.json({
+      success: true,
+      data: { stats },
+    });
+  } catch (error) {
+    console.error("Get trip stats error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching trip statistics",
+    });
+  }
+});
+
 module.exports = router;

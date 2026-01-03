@@ -343,4 +343,146 @@ router.post("/logout", auth, (req, res) => {
   });
 });
 
+// Password reset request
+router.post(
+  "/forgot-password",
+  [
+    body("email")
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("Please enter a valid email"),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: errors.array(),
+        });
+      }
+
+      const { email } = req.body;
+      const user = await User.findOne({ email });
+
+      // Always return success to prevent email enumeration
+      if (!user) {
+        return res.json({
+          success: true,
+          message:
+            "If an account with that email exists, a password reset link has been sent.",
+        });
+      }
+
+      // Generate reset token
+      const resetToken = jwt.sign(
+        { id: user._id, email: user.email },
+        process.env.JWT_SECRET + user.password, // Include password to invalidate token on password change
+        { expiresIn: "1h" }
+      );
+
+      // Send reset email (if email service is configured)
+      try {
+        const emailService = require("../services/emailService");
+        await emailService.sendPasswordResetEmail(user, resetToken);
+      } catch (emailError) {
+        console.error("Password reset email error:", emailError);
+        // Continue with success response even if email fails
+      }
+
+      res.json({
+        success: true,
+        message:
+          "If an account with that email exists, a password reset link has been sent.",
+        // Include token in response for development/testing (remove in production)
+        ...(process.env.NODE_ENV === "development" && { resetToken }),
+      });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Server error during password reset request",
+      });
+    }
+  }
+);
+
+// Reset password
+router.post(
+  "/reset-password",
+  [
+    body("token").notEmpty().withMessage("Reset token is required"),
+    body("password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters"),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: errors.array(),
+        });
+      }
+
+      const { token, password } = req.body;
+
+      // Decode token to get user ID
+      let decoded;
+      try {
+        // We need to get the user first to verify the token with their current password
+        const tempDecoded = jwt.decode(token);
+        if (!tempDecoded || !tempDecoded.id) {
+          throw new Error("Invalid token structure");
+        }
+
+        const user = await User.findById(tempDecoded.id);
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        // Verify token with user's current password
+        decoded = jwt.verify(token, process.env.JWT_SECRET + user.password);
+      } catch (jwtError) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid or expired reset token",
+        });
+      }
+
+      // Get user and update password
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid reset token",
+        });
+      }
+
+      // Hash new password
+      const saltRounds = 12;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Update password
+      await User.findByIdAndUpdate(user._id, {
+        password: hashedPassword,
+      });
+
+      res.json({
+        success: true,
+        message: "Password has been reset successfully",
+      });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Server error during password reset",
+      });
+    }
+  }
+);
+
 module.exports = router;
