@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -70,50 +71,20 @@ function UserProfile() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header - Reusing Dashboard style */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link to="/" className="flex items-center">
-                <h2 className="text-2xl font-bold text-blue-600">GlobeTrotter</h2>
-              </Link>
-            </div>
+      <Navbar user={user} />
 
-            <nav className="hidden md:flex space-x-8">
-              <Link to="/dashboard" className="text-gray-500 hover:text-blue-600 font-medium pb-1">Dashboard</Link>
-              <Link to="/trips" className="text-gray-500 hover:text-blue-600 font-medium pb-1">My Trips</Link>
-              <Link to="/create-trip" className="text-gray-500 hover:text-blue-600 font-medium pb-1">Create Trip</Link>
-              <Link to="/profile" className="text-blue-600 font-medium border-b-2 border-blue-600 pb-1">Profile</Link>
-            </nav>
-
-            <div className="flex items-center space-x-4">
-               <button
-                onClick={() => {
-                  localStorage.clear();
-                  window.location.href = "/";
-                }}
-                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pt-32">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Left Column: Profile Card */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-600"></div>
               <div className="px-6 pb-6 text-center -mt-16">
                 <div className="relative inline-block">
-                  <img 
-                    src={user.profileImage} 
-                    alt="Profile" 
+                  <img
+                    src={user.profileImage}
+                    alt="Profile"
                     className="w-32 h-32 rounded-full border-4 border-white shadow-md bg-white"
                   />
                   <button className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-gray-100 hover:bg-gray-50 text-blue-600">
@@ -126,7 +97,7 @@ function UserProfile() {
                 <h1 className="mt-4 text-2xl font-bold text-gray-900">{user.firstName} {user.lastName}</h1>
                 <p className="text-gray-500">{user.location}</p>
                 <p className="mt-4 text-gray-600 text-sm italic">"{user.bio}"</p>
-                
+
                 <div className="mt-6 pt-6 border-t border-gray-100 grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <p className="text-xl font-bold text-gray-900">{trips.length}</p>
@@ -168,13 +139,13 @@ function UserProfile() {
 
           {/* Right Column: Profile Details & Trips */}
           <div className="lg:col-span-2 space-y-8">
-            
+
             {/* Editable Info Section */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                 <h3 className="font-bold text-lg text-gray-900">Personal Details</h3>
                 {!isEditing ? (
-                  <button 
+                  <button
                     onClick={() => setIsEditing(true)}
                     className="text-blue-600 font-medium hover:text-blue-700 flex items-center"
                   >
@@ -185,13 +156,13 @@ function UserProfile() {
                   </button>
                 ) : (
                   <div className="flex space-x-3">
-                    <button 
+                    <button
                       onClick={() => setIsEditing(false)}
                       className="px-4 py-1.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"
                     >
                       Cancel
                     </button>
-                    <button 
+                    <button
                       onClick={handleSave}
                       className="px-4 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium shadow-sm"
                     >
@@ -200,13 +171,13 @@ function UserProfile() {
                   </div>
                 )}
               </div>
-              
+
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">First Name</label>
                     {isEditing ? (
-                      <input 
+                      <input
                         name="firstName"
                         value={editedUser.firstName}
                         onChange={handleChange}
@@ -219,7 +190,7 @@ function UserProfile() {
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
                     {isEditing ? (
-                      <input 
+                      <input
                         name="lastName"
                         value={editedUser.lastName}
                         onChange={handleChange}
@@ -232,7 +203,7 @@ function UserProfile() {
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
                     {isEditing ? (
-                      <input 
+                      <input
                         name="email"
                         value={editedUser.email}
                         onChange={handleChange}
@@ -245,7 +216,7 @@ function UserProfile() {
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">Location</label>
                     {isEditing ? (
-                      <input 
+                      <input
                         name="location"
                         value={editedUser.location}
                         onChange={handleChange}
@@ -258,7 +229,7 @@ function UserProfile() {
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-500 mb-1">Bio</label>
                     {isEditing ? (
-                      <textarea 
+                      <textarea
                         name="bio"
                         rows="3"
                         value={editedUser.bio}
@@ -279,14 +250,14 @@ function UserProfile() {
                     Travel Preferences
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                        <p className="text-xs text-blue-600 uppercase tracking-wider font-bold mb-1">Travel Style</p>
-                        <p className="text-blue-900 font-semibold">{user.preferences.travelStyle}</p>
-                     </div>
-                     <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
-                        <p className="text-xs text-purple-600 uppercase tracking-wider font-bold mb-1">Budget Preference</p>
-                        <p className="text-purple-900 font-semibold">{user.preferences.budgetType}</p>
-                     </div>
+                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                      <p className="text-xs text-blue-600 uppercase tracking-wider font-bold mb-1">Travel Style</p>
+                      <p className="text-blue-900 font-semibold">{user.preferences.travelStyle}</p>
+                    </div>
+                    <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                      <p className="text-xs text-purple-600 uppercase tracking-wider font-bold mb-1">Budget Preference</p>
+                      <p className="text-purple-900 font-semibold">{user.preferences.budgetType}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -312,10 +283,9 @@ function UserProfile() {
                     <div className="flex-grow min-w-0">
                       <div className="flex items-center justify-between">
                         <h4 className="font-bold text-gray-900 truncate">{trip.name}</h4>
-                        <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
-                          trip.status === 'completed' ? 'bg-green-100 text-green-700' : 
+                        <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${trip.status === 'completed' ? 'bg-green-100 text-green-700' :
                           trip.status === 'upcoming' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'
-                        }`}>
+                          }`}>
                           {trip.status}
                         </span>
                       </div>
@@ -328,12 +298,12 @@ function UserProfile() {
                   </div>
                 ))}
                 <button className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-4 flex flex-col items-center justify-center text-gray-400 hover:bg-gray-100 hover:border-blue-300 hover:text-blue-500 transition-all group">
-                   <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm group-hover:scale-110 transition-transform">
-                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                     </svg>
-                   </div>
-                   <span className="font-medium">Plan New Adventure</span>
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm group-hover:scale-110 transition-transform">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </div>
+                  <span className="font-medium">Plan New Adventure</span>
                 </button>
               </div>
             </div>

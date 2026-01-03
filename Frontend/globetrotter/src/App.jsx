@@ -14,6 +14,12 @@ import ItineraryBuilder from "./pages/ItineraryBuilder";
 import UserProfile from "./pages/UserProfile";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminSignIn from "./pages/AdminSignIn";
+import CalendarPage from "./pages/CalendarPage";
+import ItineraryBudgetPage from "./pages/ItineraryBudgetPage";
+import CommunityPage from "./pages/CommunityPage";
+
+
+
 
 
 // Simple authentication check
@@ -74,6 +80,33 @@ function App() {
             element={
               // <ProtectedRoute>
               <UserProfile />
+              // </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/calendar"
+            element={
+              // <ProtectedRoute>
+              <CalendarPage />
+              // </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/itinerary"
+            element={
+              // <ProtectedRoute>
+              <ItineraryBudgetPage />
+              // </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/community"
+            element={
+              // <ProtectedRoute>
+              <CommunityPage />
               // </ProtectedRoute>
             }
           />
